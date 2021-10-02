@@ -1,8 +1,11 @@
 #!/bin/bash
 
-data_dir=/home/kmyoon/data/LibriSpeech
+#data_dir=/home/kmyoon/data/LibriSpeech
+#work_dir=/home/kmyoon/exp/tf-asr
+#out_dir=${work_dir}/outputs/librispeech
 
-work_dir=/home/kmyoon/exp/tf-asr
+data_dir=/home/feesh/corpus/LibriSpeech
+work_dir=/home/feesh/projects/tf-asr
 out_dir=${work_dir}/outputs/librispeech
 mkdir -p ${out_dir}
 

@@ -90,7 +90,7 @@ if __name__ == "__main__":
         config=config["dsp_config"]
     )
     libri_train.create(args.data_dir, train_data_types)
-    train_tfrecord_name = os.path.join(args.out_dir, "librispeech", "train.tfrecord")
+    train_tfrecord_name = os.path.join(args.out_dir, "train.tfrecord")
     libri_train.save(train_tfrecord_name)
 
     # create tf-record for validation
@@ -99,5 +99,5 @@ if __name__ == "__main__":
         config=config["dsp_config"]
     )
     libri_valid.create(args.data_dir,valid_data_types)
-    valid_tfrecord_name = os.path.join(args.out_dir, "librispeech", "valid.tfrecord")
+    valid_tfrecord_name = os.path.join(args.out_dir, "valid.tfrecord")
     libri_valid.save(valid_tfrecord_name)
