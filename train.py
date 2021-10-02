@@ -83,15 +83,14 @@ def compute_ctc_loss(y_pred, y_true, y_pred_length, y_true_length, blank=0, eos=
     y_true_length: tensor of shape [batch_size]
     '''
     loss = tf.nn.ctc_loss(
-        labels=y_true,
-        logits=y_pred,
-        label_length=y_true_length,
-        logit_length=y_pred_length,
+        labels=tf.cast(y_true, tf.int32),
+        logit_length=tf.cast(y_pred_length, tf.int32),
+        logits=tf.cast(y_pred, tf.float32),
+        label_length=tf.cast(y_true_length, tf.int32),
         blank_index=blank,
         logits_time_major=False
     )
-    loss = tf.reduce_mean(loss)
-    return loss
+    return tf.nn.compute_average_loss(loss)
 
 @tf.function
 def compute_cer(y_pred, y_true, y_pred_length):
