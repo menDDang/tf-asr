@@ -1,0 +1,25 @@
+
+dsp_config:
+  sample_rate: 16000
+  frame_ms: 25
+  stride_ms: 10
+  num_feature_bins: 80
+  # feature_type - one of {spectrogram, log_mel_spectrogram, mfcc}
+  feature_type: log_mel_spectrogram
+  preemphasis: 0.97
+  top_db: 80.0
+  normalize_signal: True
+  normalize_feature: True
+  normalize_per_frame: False
+  fft_center: True
+
+
+text_config:
+  # model_type - one of {unigram(default), bpe, char, word}
+  model_type: unigram
+  target_vocab_size: 1000
+  max_subword_length: 10
+  blank_at_zero: True
+  beam_width: 0
+  norm_score: True
+  
