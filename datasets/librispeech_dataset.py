@@ -12,14 +12,14 @@ from .asr_dataset import AsrDataset
 class LibrispeechDataset(AsrDataset):
     def __init__(
         self, 
-        sentence_piece_model_path,
-        config : dict = None,
-        tokenizer = None
+        sentence_piece_model_path=None,
+        config : dict = None
     ):
         super(LibrispeechDataset, self).__init__(config)
     
-        self.tokenizer = sp.SentencePieceProcessor()
-        self.tokenizer.Load(sentence_piece_model_path)
+        if sentence_piece_model_path is not None:
+            self.tokenizer = sp.SentencePieceProcessor()
+            self.tokenizer.Load(sentence_piece_model_path)
 
     def tokenize_text(self, text : tf.Tensor):
         text = str(text)
