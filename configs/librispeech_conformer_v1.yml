@@ -23,3 +23,8 @@ text_config:
   beam_width: 0
   norm_score: True
   
+model_config:
+  model_type: tds
+  
+train_config:
+  batch_size: 16
