@@ -147,7 +147,7 @@ class LibrispeechDataset(AsrDataset):
         writer.write(self.dataset)
 
     def load(self, path):
-        self.dataset = tf.data.TFRecordDataset(path)
+        self.dataset = tf.data.TFRecordDataset(path, compression_type="ZLIB")
         self.dataset = self.dataset.map(
             self._parseExample,
             num_parallel_calls=tf.data.experimental.AUTOTUNE
