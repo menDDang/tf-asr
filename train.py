@@ -135,13 +135,13 @@ def eval_step(x, x_length, y_true, y_true_length, model):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--train_tfrecord", type=str, required=True)
+    parser.add_argument("--valid_tfrecord", type=str, required=True)
+    parser.add_argument("--config", type=str, required=True)
     parser.add_argument("--gpu_ids", type=str, default="0")
     parser.add_argument("--log_dir", type=str, default="./logs")
     parser.add_argument("--chkpt_dir", type=str, default="./chkpt")
-    parser.add_argument("--train_dataset_path", type=str, required=True)
-    parser.add_argument("--valid_dataset_path", type=str, required=True)
-    parser.add_argument("--config", type=str, required=True)
-    args = parseArguments()
+    args = parser.parse_args()
 
     #os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_ids
 
@@ -149,36 +149,32 @@ if __name__ == "__main__":
     log_dir = os.path.join(args.log_dir, current_time)
     chkpt_dir = os.path.join(args.chkpt_dir, current_time)
 
-    config = utils_load_yaml(args.config)
+    config = utils.load_yaml(args.config)
 
-    libri_train = LibriSpeechDataset(hp)
-    libri_train.load(args.train_dataset_path)
-    train_dataset = libri_train.dataset
-
-    libri_valid = LibriSpeechDataset(hp)
-    libri_valid.load(args.valid_dataset_path)
-    valid_dataset = libri_valid.dataset
+    libri_train = LibrispeechDataset()
+    libri_train.load(args.train_tfrecord)
     
-    if max_mel_length > 0 and max_token_length > 0:
-        train_dataset = train_dataset.filter(lambda x, x_length, y_true, y_length : (
-            tf.shape(x)[0] < max_mel_length 
-            and tf.shape(y_true)[0] < max_token_length
-        ))
-        valid_dataset = valid_dataset.filter(lambda x, x_length, y_true, y_length : (
-            tf.shape(x)[0] < max_mel_length and tf.shape(y_true)[0] < max_token_length
-        ))
+    # create tf-record for validation
+    libri_valid = LibrispeechDataset()
+    libri_valid.load(args.valid_tfrecord)
 
+    train_dataset = libri_train.dataset
+    valid_dataset = libri_valid.dataset
+
+    num_mels = config["dsp_config"]["num_feature_bins"]
     train_dataset = train_dataset.padded_batch(
-        batch_size=hp["batch_size"], 
-        padded_shapes=([None, num_mels], [], [None], [])
+        batch_size=config["train_config"]["batch_size"], 
+        padded_shapes=([None, num_mels, 1], [], [None], []),
+        padding_values=(0.0, 0, PAD_TOKEN_ID, 0)
     )
     valid_dataset = valid_dataset.padded_batch(
-        batch_size=hp["batch_size"], 
-        padded_shapes=([None, num_mels], [], [None], [])
+        batch_size=config["train_config"]["batch_size"], 
+        padded_shapes=([None, num_mels, 1], [], [None], []),
+        padding_values=(0.0, 0, PAD_TOKEN_ID, 0)
     )
     train_dataset.prefetch(tf.data.experimental.AUTOTUNE)
     valid_dataset.prefetch(tf.data.experimental.AUTOTUNE)
-    
+
     # Build model
     model = buildModel(hp, libri_train.vocab_size, max_output_length=max_token_length)
     if model == None:
@@ -209,8 +205,7 @@ if __name__ == "__main__":
             train_loss_object.update_state(train_loss)
             train_cer_object.update_state(train_cer)
             print("Step : %d, Train Loss : %f, Train CER : %f" % (step, float(train_loss), float(train_cer)))
-            #if step == 100:
-            #    break
+           
         train_loss = train_loss_object.result()
         train_cer = train_cer_object.result()
         
@@ -224,8 +219,6 @@ if __name__ == "__main__":
             valid_loss, valid_cer = eval_step(x, x_length, y_true, y_true_length, model)
             valid_loss_object.update_state(valid_loss)
             valid_cer_object.update_state(valid_cer)
-            #if step == 5:
-            #    break
         valid_loss = valid_loss_object.result()
         valic_cer = valid_cer_object.result()
 
