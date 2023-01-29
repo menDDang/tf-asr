@@ -1,0 +1,47 @@
+dataset:
+  use_cache: False
+  shuffle: False
+  buffer_size: 100
+
+  bitrate: 16
+
+tokenizer: 
+  type: "character"
+  blank_at_zero: True
+
+  
+feature_extractor:
+  sampling_rate: 16000
+  frame_ms: 25
+  hop_ms: 10
+  center: True
+  window_type: "hanning"
+  preemphasis_coeff: 0.97
+  top_db: 80.0
+  num_mel_bins: 80
+  num_mfcc_bins: 40
+  min_hertz: 0
+  max_hertz: 8000
+  feature_type: "log_mel"
+  normalize_signal: True
+  normalize_feature: True
+  epsilon: 1e-10
+
+
+spec_augment:
+  time_masks_number: 2
+  time_mask_max_size: 10
+  frequency_masks_number: 2
+  frequency_mask_max_size: 5
+  
+training:
+  batch_size: 16
+  epochs: 100
+  
+  init_lr: 0.001
+  lr_decay_rate: 1
+  lr_decay_step: 40
+  #optimizer: "sgd"
+  optimizer: "adam"
+  #global_clipnorm: 15.0
+  clipnorm: 15.0

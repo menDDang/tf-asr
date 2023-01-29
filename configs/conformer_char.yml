@@ -1,0 +1,74 @@
+dataset:
+  use_cache: False
+  shuffle: False
+  buffer_size: 100
+
+  bitrate: 16
+
+tokenizer: 
+  type: "character"
+  blank_at_zero: True
+
+  
+feature_extractor:
+  sampling_rate: 16000
+  frame_ms: 25
+  hop_ms: 10
+  center: True
+  window_type: "hanning"
+  preemphasis_coeff: 0.97
+  top_db: 80.0
+  num_mel_bins: 80
+  num_mfcc_bins: 40
+  min_hertz: 0
+  max_hertz: 8000
+  feature_type: "log_mel"
+  normalize_signal: True
+  normalize_feature: True
+  epsilon: 1e-10
+
+
+spec_augment:
+  time_masks_number: 2
+  time_mask_max_size: 10
+  frequency_masks_number: 2
+  frequency_mask_max_size: 5
+
+model:
+  model_type: "conformer_ctc_char"
+  
+  encoder:
+    encoder_subsampling: 
+      type: conv2d
+      filters: 144
+      strides: 2
+      kernel_size: 3
+    encoder_positional_encoding: sinsuoid
+    encoder_model_depth: 144
+    encoder_num_blocks: 16
+    encoder_head_size: 36
+    encoder_num_heads: 4
+    encoder_mha_type: relmha
+    encoder_kernel_size: 32
+    encoder_depth_multiplier: 1
+    encoder_fc_factor: 0.5
+    encoder_dropout: 0.1
+
+
+  decoder:
+    num_units: 512
+    #attention_type: dot
+    attention_type: scaled_dot
+  
+training:
+  batch_per_device: 16
+  batch_size: 16
+  epochs: 100
+  
+  init_lr: 0.001
+  lr_decay_rate: 1
+  lr_decay_step: 40
+  #optimizer: "sgd"
+  optimizer: "adam"
+  #global_clipnorm: 15.0
+  clipnorm: 15.0

@@ -1,0 +1,58 @@
+dataset:
+  use_cache: False
+  shuffle: False
+  buffer_size: 100
+
+tokenizer: 
+  type: "character"
+  blank_at_zero: True
+
+  
+feature_extractor:
+  feature_type: "logmel"
+  bitrate: 16
+  sample_rate: 16000
+  time_shift_ms: 100
+  preemph: 0.97
+  frame_length_ms: 25
+  frame_step_ms: 10
+  window_type: "hann"
+  fft_size: 512
+  use_squared_magnitude: False
+  num_mel_bins: 80
+  num_mfcc_bins: 40
+  lower_edge_hertz: 0
+  upper_edge_hertz: 8000
+  top_db: 80.0
+  epsilon: 1e-10
+
+
+spec_augment:
+  time_masks_number: 2
+  time_mask_max_size: 10
+  frequency_masks_number: 2
+  frequency_mask_max_size: 5
+
+model:
+  model_type: "TDS"
+  params:
+    encoder_kernel_size: 21
+    encoder_num_tds_blocks: [3, 6, 5]
+    encoder_num_tds_channels: [10, 14, 18]
+    encoder_dropout_prob: 0.1
+
+    decoder_num_units: 256
+    decoder_attention_type: scaled_dot
+    decoder_attention_dim: 512
+    
+training:
+  batch_per_device: 32
+  #batch_size: 16
+  epochs: 100
+  
+  init_lr: 0.001
+  lr_decay_rate: 1
+  lr_decay_step: 40
+  #optimizer: "sgd"
+  optimizer: "adam"
+  clipnorm: 15.0
